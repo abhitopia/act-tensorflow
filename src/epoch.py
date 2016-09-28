@@ -15,9 +15,11 @@ def run_epoch(session, m, data, eval_op, verbose=False):
         cost, state, _ = session.run([m.cost, m.final_state, eval_op],
                                      {m.input_data: x,
                                       m.targets: y})
-        
 
-        if verbose and step % 100 == 0: print('you successfully completed one entire batch -- cost', cost, 'time is', time.ctime(), 'num_batch_steps_completed:', num_batch_steps_completed)
+        if verbose and step % 100 == 0:
+            print(
+                'you successfully completed one entire batch -- cost', cost, 'time is', time.ctime(),
+                'num_batch_steps_completed:', num_batch_steps_completed)
 
         costs += cost
         iters += m.num_steps
@@ -28,8 +30,4 @@ def run_epoch(session, m, data, eval_op, verbose=False):
                   (step * 1.0 / epoch_size, np.exp(costs / iters),
                    iters * m.batch_size / (time.time() - start_time)))
 
-
     return (costs / iters)
-
-
-

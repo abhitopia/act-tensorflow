@@ -5,9 +5,7 @@ import os
 import tensorflow as tf
 
 
-
 def main(save_path, sess):
-
     if not os.path.exists(save_path):
         with open(save_path, "wb") as file:
 
@@ -22,7 +20,6 @@ def main(save_path, sess):
 
 
 def load_np(save_path):
-
     if not os.path.exists(save_path):
         raise Exception("No saved weights at that location")
     else:
