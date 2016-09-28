@@ -13,13 +13,13 @@ import saveload
 from tensorflow.python.platform import flags
 
 # TODO
-# Remove creation of separate models for training and validation
+# Remove creation of separate models for training and validation (done)
 # Configure moving average (perhaps not needed with tensor board)
 # Try using contrib.learn (skflow)
-# 1) Add Tensor board logging
-# 2) Make it work with LSTM (default uses GRU)
-# 3) Pass the initial state as the final output state
-# 4) Try using dynamic rnn for sentence-wise rnn
+# Add Tensor board logging
+# Make it work with LSTM (default uses GRU)
+# Pass the initial state as the final output state
+# Try using dynamic rnn for sentence-wise rnn
 # untie loss ( with Ponder Cost) and perplexity
 
 
@@ -66,10 +66,6 @@ def main():
             if saved_model_path is not None:
                 saveload.main(saved_model_path, session)
 
-        with tf.variable_scope("model", reuse=True):
-            m_val = ACTModel(config, is_training=False)
-            m_test = ACTModel(eval_config, is_training=False)
-
         tf.initialize_all_variables().run()
 
         print("starting training")
@@ -78,7 +74,7 @@ def main():
             lr_decay = config.lr_decay ** max(i - config.max_epoch, 0.0)
             session.run(tf.assign(m.lr, config.learning_rate * lr_decay))
             train_loss = run_epoch(session, m, train_data, m.train_op, verbose=True)
-            valid_loss = run_epoch(session, m_val, val_data, tf.no_op())
+            valid_loss = run_epoch(session, m, val_data, tf.no_op())
 
             if verbose:
                 print("Epoch: {} Learning rate: {}".format(i + 1, session.run(m.lr)))
@@ -91,7 +87,7 @@ def main():
                 saveload.main(weights_dir + "/Epoch_{:02}Train_{:0.3f}Val_{:0.3f}date{}.pkl"
                               .format(i+1, train_loss,valid_loss, date), session)
 
-        test_loss = run_epoch(session, m_test, test_data, tf.no_op())
+        test_loss = run_epoch(session, m, test_data, tf.no_op())
 
     if verbose:
         print("Test Perplexity: %.3f" % test_loss)
